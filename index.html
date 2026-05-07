@@ -3,17 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Смена получателя</title>
+  <title>Смена получателя платежа — сервис обновления реквизитов</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f1419;
-      --surface: #1a2332;
-      --border: #2d3a4f;
-      --text: #e8eef5;
-      --muted: #8b9cb3;
-      --accent: #3d8bfd;
-      --accent-hover: #5ca0ff;
-      --success: #34c759;
+      --bg: #0c1118;
+      --surface: #141c26;
+      --surface-top: #1a2633;
+      --border: #2a3544;
+      --text: #e6edf5;
+      --muted: #8b98a8;
+      --accent: #1e4d78;
+      --accent-hover: #256091;
+      --accent-text: #f0f5fa;
+      --gold: #b8956a;
+      --gold-dim: rgba(184, 149, 106, 0.35);
+      --success: #2d9d5c;
+      --success-bg: rgba(45, 157, 92, 0.1);
+      --success-border: rgba(45, 157, 92, 0.45);
     }
     * {
       box-sizing: border-box;
@@ -21,8 +30,18 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Segoe UI", system-ui, sans-serif;
-      background: radial-gradient(ellipse 80% 60% at 50% -20%, #1e3a5f 0%, transparent 55%), var(--bg);
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      font-feature-settings: "tnum" 1;
+      background: var(--bg);
+      background-image:
+        linear-gradient(180deg, rgba(30, 77, 120, 0.12) 0%, transparent 42%),
+        repeating-linear-gradient(
+          -11deg,
+          transparent,
+          transparent 96px,
+          rgba(255, 255, 255, 0.015) 96px,
+          rgba(255, 255, 255, 0.015) 97px
+        );
       color: var(--text);
     }
     .page {
@@ -43,42 +62,66 @@
     }
     .card {
       width: 100%;
-      max-width: 380px;
-      background: var(--surface);
+      max-width: 400px;
+      background: linear-gradient(165deg, var(--surface-top) 0%, var(--surface) 48%);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+      border-radius: 10px;
+      padding: 0;
+      box-shadow:
+        0 1px 0 var(--gold-dim) inset,
+        0 24px 56px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+    .card-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold) 0%, rgba(184, 149, 106, 0.35) 55%, var(--gold) 100%);
+      opacity: 0.9;
+    }
+    .card-inner {
+      padding: 26px 28px 28px;
+    }
+    .doc-meta {
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
     }
     h1 {
-      margin: 0 0 8px;
-      font-size: 1.25rem;
+      margin: 0 0 10px;
+      font-size: 1.125rem;
       font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.35;
     }
     .hint {
-      margin: 0 0 20px;
-      font-size: 0.875rem;
+      margin: 0 0 22px;
+      font-size: 0.8125rem;
       color: var(--muted);
+      line-height: 1.5;
     }
     label {
       display: block;
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
+      font-weight: 500;
       color: var(--muted);
       margin-bottom: 8px;
+      letter-spacing: 0.02em;
     }
     input[type="number"] {
       width: 100%;
-      padding: 12px 14px;
-      font-size: 1.125rem;
+      padding: 11px 13px;
+      font-size: 1.0625rem;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--bg);
+      border-radius: 6px;
+      background: rgba(8, 12, 18, 0.65);
       color: var(--text);
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
     input[type="number"]:focus {
-      border-color: var(--accent);
+      border-color: rgba(184, 149, 106, 0.55);
+      box-shadow: 0 0 0 1px rgba(184, 149, 106, 0.2);
     }
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
@@ -90,41 +133,89 @@
     }
     button {
       width: 100%;
-      margin-top: 16px;
-      padding: 12px 16px;
-      font-size: 1rem;
+      margin-top: 18px;
+      padding: 11px 16px;
+      font-size: 0.875rem;
       font-weight: 600;
-      color: #fff;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent-text);
       background: var(--accent);
-      border: none;
-      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.15s, opacity 0.15s;
     }
-    button:hover {
+    button:hover:not(:disabled) {
       background: var(--accent-hover);
     }
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.55;
       cursor: not-allowed;
     }
     .result {
       display: none;
       margin-top: 20px;
-      padding: 16px;
+      padding: 15px 16px;
       text-align: center;
-      font-size: 1rem;
-      line-height: 1.5;
-      color: var(--success);
-      background: rgba(52, 199, 89, 0.12);
-      border: 1px solid rgba(52, 199, 89, 0.35);
-      border-radius: 10px;
+      font-size: 0.9375rem;
+      line-height: 1.55;
+      font-weight: 500;
+      color: #a8dfc0;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      border-radius: 6px;
     }
     .result.visible {
       display: block;
     }
+    .result-kicker {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: rgba(168, 223, 192, 0.75);
+      margin-bottom: 6px;
+    }
     .form-wrap.hidden {
       display: none;
+    }
+    .process-panel {
+      display: none;
+      margin-top: 4px;
+      padding: 28px 8px 12px;
+      text-align: center;
+    }
+    .process-panel.visible {
+      display: block;
+    }
+    .process-spinner {
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 18px;
+      border: 3px solid rgba(184, 149, 106, 0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .process-text {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 2.6em;
+    }
+    .process-hint {
+      margin: 14px 0 0;
+      font-size: 0.75rem;
+      color: var(--muted);
     }
     .banks-footer {
       width: 100%;
@@ -174,11 +265,14 @@
   <div class="page">
   <div class="main">
   <div class="card">
-    <h1>Смена получателя</h1>
-    <p class="hint">Введите сумму и нажмите «Подтвердить».</p>
+    <div class="card-bar" aria-hidden="true"></div>
+    <div class="card-inner">
+    <p class="doc-meta">Сервис обновления реквизитов</p>
+    <h1>Заявка на смену получателя платежа</h1>
+    <p class="hint">Укажите сумму в долларах США (USD) и нажмите кнопку для передачи данных в защищённый контур обработки.</p>
 
-    <div class="form-wrap" id="formWrap">
-      <label for="amount">Сумма, USD</label>
+    <div class="form-wrap" id="formWrap" aria-label="Форма заявки">
+      <label for="amount">Сумма операции, USD</label>
       <input
         type="number"
         id="amount"
@@ -189,11 +283,19 @@
         inputmode="decimal"
         autocomplete="off"
       />
-      <button type="button" id="submitBtn">Подтвердить</button>
+      <button type="button" id="submitBtn">Отправить на обработку</button>
+    </div>
+
+    <div class="process-panel" id="processPanel" role="status" aria-live="polite" aria-busy="false">
+      <div class="process-spinner" aria-hidden="true"></div>
+      <p class="process-text" id="processText">Инициализация…</p>
+      <p class="process-hint">Не закрывайте страницу до завершения операции.</p>
     </div>
 
     <div class="result" id="result" role="status" aria-live="polite">
-      Смена получателя выполнена
+      <span class="result-kicker">Операция завершена</span>
+      Смена получателя выполнена. Реквизиты обновлены в системе.
+    </div>
     </div>
   </div>
   </div>
@@ -226,18 +328,49 @@
       var amount = document.getElementById("amount");
       var submitBtn = document.getElementById("submitBtn");
       var result = document.getElementById("result");
+      var processPanel = document.getElementById("processPanel");
+      var processText = document.getElementById("processText");
+      var busy = false;
 
-      function confirm() {
+      function delay(ms) {
+        return new Promise(function (resolve) {
+          setTimeout(resolve, ms);
+        });
+      }
+
+      async function confirm() {
         var value = amount.value.trim();
         if (value === "" || Number(value) < 0 || !isFinite(Number(value))) {
           amount.focus();
           return;
         }
+        if (busy) return;
+        busy = true;
+
+        submitBtn.disabled = true;
+        amount.disabled = true;
         formWrap.classList.add("hidden");
+        processPanel.classList.add("visible");
+        processPanel.setAttribute("aria-busy", "true");
+        result.classList.remove("visible");
+
+        processText.textContent = "Проверка введённых данных…";
+        await delay(850 + Math.random() * 250);
+
+        processText.textContent = "Установление защищённого соединения с контуром обработки…";
+        await delay(950 + Math.random() * 300);
+
+        processText.textContent = "Формирование подтверждения и фиксация результата…";
+        await delay(1100 + Math.random() * 450);
+
+        processPanel.classList.remove("visible");
+        processPanel.setAttribute("aria-busy", "false");
         result.classList.add("visible");
       }
 
-      submitBtn.addEventListener("click", confirm);
+      submitBtn.addEventListener("click", function () {
+        confirm();
+      });
       amount.addEventListener("keydown", function (e) {
         if (e.key === "Enter") confirm();
       });
